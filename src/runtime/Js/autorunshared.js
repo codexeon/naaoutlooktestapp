@@ -51,10 +51,10 @@ function base64Decode(input) {
 var crypto = {
     randomUUID: _generateUUID,
     getRandomValues: customGetRandomValues,
-    base64Decode: base64Decode
 };
 
-globalThis.crypto = crypto;
+window.crypto = crypto;
+window.atob = base64Decode;
 
 import { PublicClientNext } from "@azure/msal-browser";
 
@@ -89,12 +89,17 @@ function writeOutputToMail(output) {
   );
 }
 
+function debugObject(obj, name) {
+  console.log(name + " defined in environment", obj != null);
+  var properties = Object.keys(window).join(",");
+  console.log(properties);
+}
 async function getTokenTest(eventObj) {
   try {
-    console.log("Is window defined in environment", window != null);
-    console.log("Is self defined in environment", self != null);
-    console.log("Is globalThis defined in environment", globalThis != null);
-    console.log("Is global defined in environment", global != null);
+    debugObject(window, "window");
+    debugObject(self, "self");
+    debugObject(globalThis, "globalThis");
+    debugObject(global, "global");
   } catch (ex) {
     console.log("Encountered error", ex);
   }
