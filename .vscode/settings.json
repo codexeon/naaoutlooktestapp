@@ -1,0 +1,9 @@
+{
+    "eslint.validate": [
+      "javascript",
+    ],
+    "files.associations": {
+      "*.bundle": "javascript"
+    }    
+  }
+  
