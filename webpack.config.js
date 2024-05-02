@@ -49,15 +49,15 @@ module.exports = async (env, options) => {
             },
           },
         },
-        {
-          test: /\.mjs$/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              plugins: ["@babel/plugin-transform-async-to-generator"],
-            },
-          },
-        },
+        // {
+        //   test: /\.mjs$/,
+        //   use: {
+        //     loader: "babel-loader",
+        //     options: {
+        //       plugins: ["@babel/plugin-transform-async-to-generator"],
+        //     },
+        //   },
+        // },
         {
           test: /\.html$/,
           exclude: /node_modules/,

@@ -23,8 +23,8 @@ async function ensureInitialized() {
 
 function writeOutputToMail(output) {
   console.log(output);
-  Office.context.mailbox.item.body.setAsync(
-    output,
+  Office.context.mailbox.item.body.prependAsync(
+    output + "|||",
     {
       coercionType: "html",
     }, (result) => {
@@ -45,17 +45,49 @@ async function makeGraphCall(endpointUrl, accessToken) {
   return responseJson;
 };
 
-async function getTokenTest(eventObj) {
-  const pca = await ensureInitialized();
-  try {
-    let result = await pca.ssoSilent({scopes: ["user.read"]});
-    console.log("Received token response", result);
-    console.log("Active account", pca.getActiveAccount());
-    const graphResponse = await makeGraphCall("https://graph.microsoft.com/v1.0/me", result.accessToken);
-    writeOutputToMail("Got token for account:" + result.account.username + " with length:" + result.accessToken.length + " with profileInfo:" + JSON.stringify(graphResponse));
-  } catch(ex) {
-    writeOutputToMail("Encountered an error" + ex);
+function wait(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+async function emptyPromise() {
+  return Promise.resolve();
+}
+
+async function waitMultiplePromise() {
+  for (let i = 0; i < 100; i++) {
+    await emptyPromise();
   }
+}
+
+const loadTime = new Date().getTime();
+async function getTokenTest(eventObj) {
+  writeOutputToMail("Starting test iteration");
+  const pca = await ensureInitialized();
+  for (var i = 0; i < 2; i++) {
+    const startTime = new Date().getTime();
+    try {
+      await waitMultiplePromise();
+      // writeOutputToMail(`Waiting ${i*1000}ms`)
+      // // await wait(i*1000);
+      // writeOutputToMail("Done waiting");
+      let result = await pca.ssoSilent({scopes: ["user.read"]});
+      writeOutputToMail("Received token response", result);
+      writeOutputToMail("Active account", pca.getActiveAccount());
+      writeOutputToMail("Got token for account:" + result.account.username + " with length:" + result.accessToken.length);
+      const endTime = new Date().getTime();
+      writeOutputToMail("Time taken:" + (endTime - startTime) + "ms");
+      // const graphResponse = await makeGraphCall("https://graph.microsoft.com/v1.0/me", result.accessToken);
+      // writeOutputToMail(JSON.stringify(graphResponse));
+    } catch(ex) {
+      writeOutputToMail("Encountered an error" + ex);
+    }
+  }
+
+  const nextIterationTime = new Date().getTime();
+  writeOutputToMail(`Waiting 10 seconds for next iteration total time taken:${nextIterationTime - loadTime}ms`);
+  setTimeout(() => {
+    getTokenTest(eventObj);
+  }, 10000);
 }
 
 Office.actions.associate("getTokenTest", getTokenTest);
