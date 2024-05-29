@@ -32,7 +32,7 @@
     "validate": "office-addin-manifest validate manifest.xml"
   },
   "dependencies": {
-    "@azure/msal-browser": "^3.13.0",
+    "@azure/msal-browser": "^3.15.0",
     "core-js": "^3.9.1",
     "regenerator-runtime": "^0.13.7"
   },

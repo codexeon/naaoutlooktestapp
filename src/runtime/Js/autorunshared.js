@@ -1,6 +1,6 @@
 console.log("Start JS bundle");
 
-import { PublicClientNext } from "@azure/msal-browser";
+import { createNestablePublicClientApplication } from "@azure/msal-browser";
 
 const clientId = "e3680097-6e43-43ab-8a38-23ed74b97839";
 const config = {
@@ -16,7 +16,7 @@ const config = {
 let _pca = null;
 async function ensureInitialized() {
   if (_pca == null) {
-    _pca = await PublicClientNext.createPublicClientApplication(config);
+    _pca = await createNestablePublicClientApplication(config);
   }
   return _pca;
 }
@@ -76,8 +76,8 @@ async function getTokenTest(eventObj) {
       writeOutputToMail("Got token for account:" + result.account.username + " with length:" + result.accessToken.length);
       const endTime = new Date().getTime();
       writeOutputToMail("Time taken:" + (endTime - startTime) + "ms");
-      // const graphResponse = await makeGraphCall("https://graph.microsoft.com/v1.0/me", result.accessToken);
-      // writeOutputToMail(JSON.stringify(graphResponse));
+      const graphResponse = await makeGraphCall("https://graph.microsoft.com/v1.0/me", result.accessToken);
+      writeOutputToMail(JSON.stringify(graphResponse));
     } catch(ex) {
       writeOutputToMail("Encountered an error" + ex);
     }
