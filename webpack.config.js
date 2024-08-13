@@ -33,31 +33,33 @@ module.exports = async (env, options) => {
       extensions: [".html", ".js"],
     },
     module: {
-      parser: {
-        javascript: {
-          dynamicImportMode: 'eager'
-        }
-      },
       rules: [
         {
-          test: /\.js$/,
-          exclude: /node_modules/,
+          test: /\.m?js$/,
+          // exclude: /node_modules/, // Exclude all node_modules except @azure
+          include: [
+            path.resolve(__dirname, 'node_modules/@azure'),
+            path.resolve(__dirname, 'src'),
+          ],
           use: {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: ["@babel/preset-env"],
-            },
-          },
+              presets: [[
+                '@babel/preset-env',
+                {
+                  useBuiltIns: 'usage',
+                  "corejs": 3,
+                  targets: {
+                    browsers: [
+                      "since 2015"
+                    ]
+                  }
+                }
+              ]
+              ]
+            }
+          }
         },
-        // {
-        //   test: /\.mjs$/,
-        //   use: {
-        //     loader: "babel-loader",
-        //     options: {
-        //       plugins: ["@babel/plugin-transform-async-to-generator"],
-        //     },
-        //   },
-        // },
         {
           test: /\.html$/,
           exclude: /node_modules/,
@@ -113,6 +115,8 @@ module.exports = async (env, options) => {
       }),
     ],
     devServer: {
+      hot: false,
+      client: false,
       static: {
         directory: path.join(__dirname, "dist"),
         publicPath: "/public",

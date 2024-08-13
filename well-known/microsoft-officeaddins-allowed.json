@@ -1,6 +1,7 @@
 {
     "allowed":
     [
-        "https://localhost:3000/public/autorunshared.js"
+        "https://localhost:3000/public/autorunshared.js",
+        "https://localhost:3000/autorunshared.js"
     ]
 }
