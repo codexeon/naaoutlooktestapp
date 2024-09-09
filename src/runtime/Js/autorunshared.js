@@ -1,6 +1,13 @@
 
 import { createNestablePublicClientApplication } from "@azure/msal-browser";
 
+
+
+console.log("Does atob exist1?" + typeof atob);
+
+console.log("Added polyfills2");
+
+
 if (eval('typeof Array.prototype.findLast === "undefined"')) {
   console.log("Running in Chakra");
 } else {
@@ -35,20 +42,30 @@ async function ensureInitialized() {
   console.log("ensureInitialized called");
   if (_pca == null) {
     _pca = await createNestablePublicClientApplication(config);
+    
+    console.log("Does atob exist2?" + typeof atob);
   }
   console.log("ensureInitialized completed");
   return _pca;
 }
 
 async function getTokenTest(eventObj) {
+
+  let pca;
   try {
-    const pca = await ensureInitialized();
+    pca = await ensureInitialized();
     let result = await pca.ssoSilent({scopes: ["user.read"]});
     writeOutputToMail("Got token for account:" + result.account.username + " with length:" + result.accessToken.length);
 
   }
   catch (ex) {
     writeOutputToMail("Encountered an error" + ex);
+    try {
+      let result = await pca.acquireTokenPopup({scopes: ["user.read"]});
+      writeOutputToMail("Got interactive token for account:" + result.account.username + " with length:" + result.accessToken.length);
+    } catch (ex2) {
+      writeOutputToMail("Encountered an error" + ex2);
+    }
   }
 }
 
